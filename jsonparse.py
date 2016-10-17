@@ -3,24 +3,22 @@ import pprint
 
 
 def array_parser(data):
-    parse_list = []
     if data[0] != "[":
         return None
+    parse_list = []
     data = data[1:].strip()
-    while len(data) > 0:
-        res = all_parsers(string_parser, number_parser, boolean_parser,
-                          null_parser, array_parser, object_parser)(data)
+    while len(data):
+        res = value_parser(data)
         if res is None:
             return None
         parse_list.append(res[0])
         data = res[1].strip()
-        res = comma_parser(data)
-        if res is not None:
-            data = res[1].strip()
-        elif not res and data and data[0].strip() != "]":
-            return None
         if data[0] == "]":
             return [parse_list, data[1:].strip()]
+        res = comma_parser(data)
+        if res is None:
+            return None
+        data = res[1].strip()
 
 
 def boolean_parser(data):
@@ -46,8 +44,6 @@ def null_parser(data):
 
 
 def number_parser(data):
-    if not data:
-        return None
     regex_find = re.findall("^(-?(?:[0-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)",
                             data)
     if not regex_find:
@@ -56,16 +52,13 @@ def number_parser(data):
     try:
         return [int(regex_find[0]), data[pos:].strip()]
     except ValueError:
-        try:
-            return [float(regex_find[0]), data[pos:].strip()]
-        except ValueError:
-            return [regex_find, data[pos:].strip()]
+        return [float(regex_find[0]), data[pos:].strip()]
 
 
 def object_parser(data):
-    parse_dict = {}
     if data[0] != "{":
         return None
+    parse_dict = {}
     data = data[1:].strip()
     while data[0] != "}":
         res = string_parser(data)
@@ -75,8 +68,7 @@ def object_parser(data):
         res = colon_parser(res[1].strip())
         if res is None:
             return None
-        res = all_parsers(string_parser, number_parser, boolean_parser,
-                          null_parser, array_parser, object_parser)(res[1].strip())
+        res = value_parser(res[1].strip())
         if res is None:
             return None
         parse_dict[id] = res[0]
@@ -84,8 +76,6 @@ def object_parser(data):
         res = comma_parser(data)
         if res:
             data = res[1].strip()
-        elif data[0] != "}":
-            return None
     return [parse_dict, data[1:]]
 
 
@@ -93,9 +83,13 @@ def string_parser(data):
     if data[0] == '"':
         data = data[1:]
         pos = data.find('"')
-        while data[pos - 1] == "\\":
-            pos += data[pos + 1:].find('"') + 1
         return [data[:pos], data[pos + 1:].strip()]
+
+
+def value_parser(data):
+    res = all_parsers(null_parser, number_parser, boolean_parser,
+                      string_parser, object_parser, array_parser)(data)
+    return res
 
 
 def all_parsers(*args):
@@ -111,8 +105,7 @@ def main():
     file_name = "ex3.json"
     with open(file_name, "r") as f:
         data = f.read()
-
-    res = all_parsers(object_parser, array_parser)(data.strip())
+    res = value_parser(data.strip())
     try:
         pprint.pprint(res[0])
     except TypeError:

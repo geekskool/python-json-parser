@@ -4,7 +4,7 @@ import pprint
 
 def array_parser(data):
     parse_list = []
-    if data[0] != '[':
+    if data[0] != "[":
         return None
     data = data[1:].strip()
     while len(data) > 0:
@@ -17,31 +17,31 @@ def array_parser(data):
         res = comma_parser(data)
         if res is not None:
             data = res[1].strip()
-        elif not res and data and data[0].strip() != ']':
+        elif not res and data and data[0].strip() != "]":
             return None
-        if data[0] == ']':
+        if data[0] == "]":
             return [parse_list, data[1:].strip()]
 
 
 def boolean_parser(data):
-    if data[0:4] == 'true':
+    if data[0:4] == "true":
         return [True, data[4:].strip()]
-    elif data[0:5] == 'false':
+    elif data[0:5] == "false":
         return [False, data[5:].strip()]
 
 
 def colon_parser(data):
-    if data[0] == ':':
+    if data[0] == ":":
         return [data[0], data[1:].lstrip()]
 
 
 def comma_parser(data):
-    if data and data[0] == ',':
+    if data and data[0] == ",":
         return [data[0], data[1:].strip()]
 
 
 def null_parser(data):
-    if data[0:4] == 'null':
+    if data[0:4] == "null":
         return [None, data[4:].strip()]
 
 
@@ -64,10 +64,10 @@ def number_parser(data):
 
 def object_parser(data):
     parse_dict = {}
-    if data[0] != '{':
+    if data[0] != "{":
         return None
     data = data[1:].strip()
-    while data[0] != '}':
+    while data[0] != "}":
         res = string_parser(data)
         if res is None:
             return None
@@ -84,7 +84,7 @@ def object_parser(data):
         res = comma_parser(data)
         if res:
             data = res[1].strip()
-        elif data[0] != '}':
+        elif data[0] != "}":
             return None
     return [parse_dict, data[1:]]
 
@@ -93,7 +93,7 @@ def string_parser(data):
     if data[0] == '"':
         data = data[1:]
         pos = data.find('"')
-        while data[pos - 1] == '\\':
+        while data[pos - 1] == "\\":
             pos += data[pos + 1:].find('"') + 1
         return [data[:pos], data[pos + 1:].strip()]
 
@@ -118,5 +118,5 @@ def main():
         print(None)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

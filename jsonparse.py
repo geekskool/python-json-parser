@@ -108,7 +108,8 @@ def all_parsers(*args):
 
 
 def main():
-    with open("ex3.json", "r") as f:
+    file_name = "ex3.json"
+    with open(file_name, "r") as f:
         data = f.read()
 
     res = all_parsers(object_parser, array_parser)(data.strip())

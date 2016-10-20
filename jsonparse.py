@@ -1,3 +1,4 @@
+from functools import reduce
 import re
 import pprint
 
@@ -87,16 +88,11 @@ def string_parser(data):
 
 
 def all_parsers(*args):
-    def specific_parser(data):
-        for each_parser in args:
-            res = each_parser(data)
-            if res:
-                return res
-    return specific_parser
- 
-    
-value_parser=all_parsers(null_parser, number_parser, boolean_parser,
-                         string_parser, object_parser, array_parser)    
+    return lambda data: (reduce(lambda f, g: f if f(data) else g, args)(data))
+
+
+value_parser = all_parsers(null_parser, number_parser, boolean_parser,
+                           string_parser, object_parser, array_parser)
 
 
 def main():

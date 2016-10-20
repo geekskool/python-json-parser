@@ -96,7 +96,7 @@ def all_parsers(*args):
  
     
 value_parser=all_parsers(null_parser, number_parser, boolean_parser,
-                      string_parser, object_parser, array_parser)    
+                         string_parser, object_parser, array_parser)    
 
 
 def main():

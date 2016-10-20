@@ -86,12 +86,6 @@ def string_parser(data):
         return [data[:pos], data[pos + 1:].strip()]
 
 
-def value_parser(data):
-    res = all_parsers(null_parser, number_parser, boolean_parser,
-                      string_parser, object_parser, array_parser)(data)
-    return res
-
-
 def all_parsers(*args):
     def specific_parser(data):
         for each_parser in args:
@@ -99,6 +93,10 @@ def all_parsers(*args):
             if res:
                 return res
     return specific_parser
+ 
+    
+value_parser=all_parsers(null_parser, number_parser, boolean_parser,
+                         string_parser, object_parser, array_parser)    
 
 
 def main():
